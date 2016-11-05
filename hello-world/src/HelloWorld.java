@@ -2,6 +2,14 @@ import java.util.ArrayList;
 
 public class HelloWorld {
 	
+	public String joinWords(String[] words) { 
+		StringBuilder sentence = new StringBuilder();
+		for (String w : words) {
+			sentence.append(w);
+		}
+		return sentence.toString(); 
+	}
+	
 	public static ArrayList<String> merge(String[] words, String[] more) { 
 	
 		ArrayList<String> sentence = new ArrayList<String>(); 
@@ -17,7 +25,13 @@ public class HelloWorld {
 	String[] more = {"HI again", "hello again "};
 	
 	ArrayList<String> mergeThem = merge(words, more);
-	System.out.print(mergeThem);
+	System.out.println(mergeThem);
+	
+	HelloWorld hi = new HelloWorld();
+	
+	String [] mergeThemString = mergeThem.stream().toArray(String[]::new);
+	String sb = hi.joinWords(mergeThemString);
+	System.out.println(sb);
 	
 	}
 
