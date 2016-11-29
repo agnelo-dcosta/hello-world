@@ -10,6 +10,7 @@ public class Tries {
 	Tries(char n)
 	{
 		this.root = n;
+		endWord = "0";
 	}
 	
 	
@@ -21,16 +22,23 @@ public class Tries {
 				if (charNode == null)
 				{
 					charNode = new Tries(nameString.charAt(0));
-					charNode.endWord = nameString;
+					charNode.endWord = nameString.substring(1,nameString.length());
 					t.nodes.add(charNode);
+					for(int i=1; i < nameString.length(); i++){
+						Tries temp = new Tries(nameString.charAt(i));
+						charNode.nodes.add(temp);
+						charNode = temp;
+					}
+//					Tries temp = new Tries('0');
+//					charNode.nodes.add(temp);
+					
 					return;
 				}
-				String temp = charNode.endWord;
-				charNode.endWord = null;
-				addToTree(charNode, nameString.substring(1, nameString.length()));
-				if(temp != null){
-					addToTree(t, temp);
-					//addToTree(charNode, temp);
+				else{
+					String temp = charNode.endWord;
+					charNode.endWord = "0";
+					addToTree(charNode, nameString.substring(1, nameString.length()));
+					if(temp.length() > 0 && !temp.equals("0"))addToTree(charNode, temp);
 				}
 		}
 		else {
@@ -41,12 +49,14 @@ public class Tries {
 	
 	void print(Tries t)
 	{
-		if (t== null || (t != null && t.root == '0') || ( t != null && t.endWord != null)){
-			System.out.print("" + t.endWord + "");
-			System.out.print(" EN\n");
+		if (t== null || (t != null && t.root == '0')  ){
+			System.out.print(  " EN\n");
 			return;
 		}
-		
+		if(!t.endWord.equals("0")){
+			System.out.print(t.root + t.endWord +  " EN\n");
+			return;
+		}
 		else{
 			System.out.print("" + t.root + "");
 			t.nodes.stream().forEach(n -> print(n));
@@ -58,22 +68,32 @@ public class Tries {
 	
 	int countPar(Tries t,String par)
 	{
-		if(par.length() ==0 && (t == null || t.root == '0') ){
-			cn++; return cn; }
+		if(par.length() ==0 && (t == null || t.root == '0')  ){ //leaf nodes
+			cn++; }
+		if(par.length() ==0 && !t.endWord.equals("0")  ){ //leaf nodes
+			cn++; return cn;}
 		
-		if(t !=null && t.endWord != null && t.endWord.contains(par)){
-			cn++; return cn;
+		if((par.length() ==0 && (t != null) && t.root != '0')){ // word found. find all leaves
+			t.nodes.stream().forEach(n -> {if(n!=null)countPar(n,par);});
+		
 		}
-		
-		if((par.length() ==0 && (t != null)) ||  t.root == '1'){
-			t.nodes.stream().forEach(n -> {countPar(n,par);});
-		}
-		
-		if(par.length() !=0 && t.root != par.charAt(0) )
+		// hack0erran
+		if(par.length() !=0 && t.root != par.charAt(0) && (t.root != '1') ) // char mismatch
 			return cn;
 		
 		if(par.length() !=0 && t.root == par.charAt(0) ){
-			t.nodes.stream().forEach(n -> {countPar(n,par.substring(1, par.length()));});
+			for(int i = 1; i < par.length(); i++){
+				char tc = par.charAt(i);
+				Tries tr = t.nodes.stream().filter(n -> n.root == tc).findAny().orElse(null) ;
+				if(tr == null) return cn;
+				else{
+					t = tr;
+				}
+			}
+			t.nodes.stream().forEach(n -> countPar(n, ""));	
+		}
+		if(t.root == '1'){
+			t.nodes.stream().forEach(n -> {countPar(n,par);});
 		}
 		
 		
@@ -106,7 +126,7 @@ public class Tries {
 		r.cn = 0;
 		System.out.println("hac "  + "  " + r.countPar(r, "hac"));
 		r.cn = 0;
-		System.out.println("ackerrank "  + "  " + r.countPar(r, "ackerrank"));
+		System.out.println("hak "  + "  " + r.countPar(r, "hak"));
 		r.cn = 0;
 		System.out.println("Auto "  + "  " + r.countPar(r, "Auto"));
 		
