@@ -70,7 +70,7 @@ public class Tries{
 		
 		System.out.println("ackerrank ");find( "ackerrank");
 		
-		System.out.println("auto");find( "auto");
+		System.out.println("Auto");find( "Auto");
 		
 //		   if(op.equals("add")) add(contact);
 //           if(op.equals("find")) System.out.println(count(contact));
